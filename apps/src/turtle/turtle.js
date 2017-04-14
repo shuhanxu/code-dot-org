@@ -48,6 +48,7 @@ import {
   runAfterPostContainedLevel
 } from '../containedLevels';
 import {getStore} from '../redux';
+import project from '../code-studio/initApp/project';
 
 var CANVAS_HEIGHT = 400;
 var CANVAS_WIDTH = 400;
@@ -262,6 +263,7 @@ Artist.prototype.afterInject_ = function (config) {
   this.ctxScratch = this.createCanvas_('scratch', 400, 400).getContext('2d');
   this.ctxPattern = this.createCanvas_('pattern', 400, 400).getContext('2d');
   this.ctxFeedback = this.createCanvas_('feedback', 154, 154).getContext('2d');
+  this.ctxThumbnail = this.createCanvas_('thumbnail', 180, 180).getContext('2d');
 
   // Create display canvas.
   var displayCanvas = this.createCanvas_('display', 400, 400);
@@ -1480,6 +1482,10 @@ Artist.prototype.checkAnswer = function () {
     this.testResults = this.studioApp_.TestResults.FREE_PLAY;
   }
 
+  if (project.getCurrentId() && project.isOwner()) {
+    this.getThumbnailPngBlob_(project.saveThumbnail);
+  }
+
   // Play sound
   this.studioApp_.stopLoopingAudio('start');
   if (this.testResults === this.studioApp_.TestResults.FREE_PLAY ||
@@ -1556,6 +1562,18 @@ Artist.prototype.getFeedbackImage_ = function (width, height) {
   this.ctxFeedback.canvas.height = origHeight;
 
   return image;
+};
+
+/**
+ * Renders the artist's image as a Blob in PNG format. Relies on this.ctxImages,
+ * this.ctxPredraw, and this.ctxScratch to have already been drawn.
+ * @param {function(Blob)} callback Function to call with the PNG Blob.
+ * @private
+ */
+Artist.prototype.getThumbnailPngBlob_ = function (callback) {
+  this.clearImage_(this.ctxThumbnail);
+  this.drawImage_(this.ctxThumbnail);
+  this.ctxThumbnail.canvas.toBlob(callback);
 };
 
 Artist.prototype.clearImage_ = function (context) {
