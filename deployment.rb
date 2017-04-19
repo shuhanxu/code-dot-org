@@ -58,7 +58,7 @@ def load_configuration
     'dashboard_port'              => 3000,
     'dashboard_unicorn_name'      => 'dashboard',
     'dashboard_enable_pegasus'    => rack_env == :development,
-    'dashboard_workers'           => 8,
+    'dashboard_workers'           => 4,
     'db_reader'                   => 'mysql://root@localhost/',
     'db_writer'                   => 'mysql://root@localhost/',
     'reporting_db_reader'         => 'mysql://root@localhost/',
